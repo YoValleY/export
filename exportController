@@ -1,0 +1,45 @@
+	public function export()
+	{
+	    $driver = $this->db->query("Select * from employee")->result();
+	   		$export = array();
+		$export[] =array( 
+		    'Id',
+		    'Name',
+		    'Username' ,
+		    'Password',
+			'MobileNo',
+			'Email' ,
+		);
+		header("Pragma: public");
+		header("Expires: 0");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Content-Type: application/force-download");
+		header("Content-Type: application/octet-stream");
+		header("Content-Type: application/download");
+		header("Content-Disposition: attachment;filename=cabservices".time().".csv");
+		header("Content-Transfer-Encoding: binary");
+		
+		$df = fopen("php://output", 'w');
+		/*	array_walk($driver, function($row) use ($df) {
+			fputcsv($df, $row);
+		});*/
+	
+		$i=1;
+		foreach($driver as $row){
+		    
+		    
+		    $export[] = array(
+		        'id'        =>	$i, 
+		        'name'      =>  $row->first_name	,
+		        'username'  =>  $row->username,
+		        'password'  =>  $row->password,
+		        'phone'         =>  $row->mobile_no,
+		        'email'         =>  $row->email_id,
+		    );
+		    $i++;
+		}
+		array_walk($export, function($rows) use ($df) {
+			fputcsv($df, $rows);
+		});
+		fclose($df);
+	}
