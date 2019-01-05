@@ -1,0 +1,56 @@
+
+	public function index()
+	{
+	    $driver = $this->db->query("Select * from driver_details")->result();
+	   		$export = array();
+		$export[] =array( 
+		    'Id',
+		    'Name',
+		    'Username' ,
+		    'Password',
+			'MobileNo',
+			'Email' ,
+			'Vehicle Number',
+			'License Number',
+			'Vehicle Rc Number',
+			'Vehicle Insurance Number',
+			'Car Type',
+	    );
+		header("Pragma: public");
+		header("Expires: 0");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Content-Type: application/force-download");
+		header("Content-Type: application/octet-stream");
+		header("Content-Type: application/download");
+		header("Content-Disposition: attachment;filename=cabservices".time().".csv");
+		header("Content-Transfer-Encoding: binary");
+		
+		$df = fopen("php://output", 'w');
+		/*	array_walk($driver, function($row) use ($df) {
+			fputcsv($df, $row);
+		});*/
+	
+		$i=1;
+		foreach($driver as $row){
+		    
+		    
+		    $export[] = array(
+		        'id'        =>$i, 
+		        'name'      =>  $row->name,
+		        'username'  =>  $row->username,
+		        'password'  =>  $row->password,
+		        'phone'         =>  $row->phone,
+		        'email'         =>  $row->email,
+		        'car_no'        =>  $row->car_no,
+		        'license_no'    =>  $row->license_no,
+		        'rc_no'         =>  $row->rc_no,
+		        'insurance_no'  =>  $row->insurance_no,
+		        'cartype'       =>  $row->car_type,
+		    );
+		    $i++;
+		}
+		array_walk($export, function($rows) use ($df) {
+			fputcsv($df, $rows);
+		});
+		fclose($df);
+	}
